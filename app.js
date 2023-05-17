@@ -1,70 +1,38 @@
-const fs = require("fs");
 const express = require("express");
-const PORT = 3000;
+const morgan = require("morgan");
+
+const tourRouter = require("./routers/tourRoutes");
+const userRouter = require("./routers/userRoutes");
 
 const app = express();
+
+// 1) middleware
+app.use(morgan("dev"));
 app.use(express.json());
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
-);
-
-app.get("/api/v1/tours", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    results: tours.length,
-    data: {
-      tours, //es6 feature, equal to tours: tours
-    },
-  });
+app.use((req, res, next) => {
+  console.log("hello from the middleware.");
+  next();
 });
 
-app.get("/api/v1/tours/:id", (req, res) => {
-  //   console.log(req.params);
-  const id = req.params.id * 1;
-  if (!tour)
-    return res.status(404).json({
-      status: "fail",
-      message: "invalid id",
-    });
-
-  const tour = tours.find((element) => element.id === id);
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      tour,
-    },
-  });
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
 });
 
-app.post("/api/v1/tours", (req, res) => {
-  //   console.log(req.body);
+// 2) route handlers
 
-  const newID = tours.at(-1).id + 1;
-  const newTour = Object.assign(
-    {
-      id: newID,
-    },
-    req.body
-  );
+// app.get("/api/v1/tours", getAllTours);
+// app.get("/api/v1/tours/:id", getTour);
+// app.post("/api/v1/tours", createTour);
+// app.patch("/api/v1/tours/:id", updateTour);
+// app.delete("/api/v1/tours/:id", deleteTour);
 
-  tours.push(newTour);
+// 3) routes
 
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: "success",
-        data: {
-          tour: newTour,
-        },
-      });
-    }
-  );
-});
+app.use("/api/v1/tours", tourRouter);
+app.use("/api/v1/users", userRouter);
 
-app.listen(PORT, () => {
-  console.log(`App is running on port ${PORT}...`);
-});
+// 4) start server
+
+module.exports = app;

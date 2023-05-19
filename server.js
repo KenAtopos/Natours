@@ -4,7 +4,6 @@ const dotenv = require("dotenv");
 dotenv.config({
   path: "./config.env",
 });
-
 const app = require("./app");
 
 const DB = process.env.DATABASE.replace(
@@ -16,6 +15,7 @@ mongoose
   .connect(DB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useCreateIndex: true,
   })
   .then(() => console.log("database connected successfully"));
 

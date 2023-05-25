@@ -78,6 +78,7 @@ exports.getAll = (Model) =>
       .limitedFields()
       .paginate();
     const doc = await features.query; // only when use await or then method, will this Query object be converted to the real object
+    // const doc = await features.query.explain(), use explain to see how many documents are examined
 
     // send query
     res.status(200).json({

@@ -152,6 +152,7 @@ const leafletMap = document.getElementById("map");
 const loginForm = document.querySelector(".form--login");
 const logoutBtn = document.querySelector(".nav__el--logout");
 const userDataForm = document.querySelector(".form-user-data");
+const passwordForm = document.querySelector(".form-user-password");
 // delegation
 if (leafletMap) {
     const locations = JSON.parse(leafletMap.dataset.locations);
@@ -168,10 +169,29 @@ if (userDataForm) userDataForm.addEventListener("submit", (e)=>{
     e.preventDefault();
     const userName = document.getElementById("name").value;
     const userEmail = document.getElementById("email").value;
-    (0, _updateSettings.updateData)(userName, userEmail);
+    (0, _updateSettings.updateSettings)({
+        userName,
+        userEmail
+    }, "data");
+});
+if (passwordForm) passwordForm.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    document.querySelector(".btn--save-password").textContent = "Updating...";
+    const passwordCurrent = document.getElementById("password-current").value;
+    const password = document.getElementById("password").value;
+    const passwordConfirm = document.getElementById("password-confirm").value;
+    await (0, _updateSettings.updateSettings)({
+        passwordCurrent,
+        password,
+        passwordConfirm
+    }, "password");
+    document.querySelector(".btn--save-password").textContent = "Save password";
+    document.getElementById("password-current").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("password-confirm").value = "";
 });
 
-},{"./login":"7yHem","@babel/polyfill":"dTCHC","./leaflet":"xvuTT","./updateSettings":"l3cGY"}],"7yHem":[function(require,module,exports) {
+},{"./login":"7yHem","@babel/polyfill":"dTCHC","./updateSettings":"l3cGY","./leaflet":"xvuTT"}],"7yHem":[function(require,module,exports) {
 /* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "login", ()=>login);
@@ -11370,7 +11390,33 @@ module.exports = function(it, key) {
     return hasOwnProperty.call(it, key);
 };
 
-},{}],"xvuTT":[function(require,module,exports) {
+},{}],"l3cGY":[function(require,module,exports) {
+/* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "updateSettings", ()=>updateSettings);
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+var _alerts = require("./alerts");
+const updateSettings = async (data, type)=>{
+    try {
+        const url = type === "password" ? "http://127.0.0.1:3000/api/v1/users/updateMyPassword" : "http://127.0.0.1:3000/api/v1/users/updateMe";
+        const res = await (0, _axiosDefault.default)({
+            method: "PATCH",
+            url,
+            data
+        });
+        if (res.data.status === "success") {
+            (0, _alerts.showAlert)("success", `${type} update successfully`);
+            window.setTimeout(()=>{
+                location.assign("/me");
+            }, 1500);
+        }
+    } catch (err) {
+        (0, _alerts.showAlert)("error", err.response.data.message);
+    }
+};
+
+},{"axios":"jo6P5","./alerts":"6Mcnf","@parcel/transformer-js/src/esmodule-helpers.js":"fD7H8"}],"xvuTT":[function(require,module,exports) {
 /* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "displayMap", ()=>displayMap);
@@ -11420,34 +11466,6 @@ const displayMap = (locations)=>{
     map.scrollWheelZoom.disable();
 };
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"fD7H8"}],"l3cGY":[function(require,module,exports) {
-/* eslint-disable */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "updateData", ()=>updateData);
-var _axios = require("axios");
-var _axiosDefault = parcelHelpers.interopDefault(_axios);
-var _alerts = require("./alerts");
-const updateData = async (name, email)=>{
-    try {
-        const res = await (0, _axiosDefault.default)({
-            method: "PATCH",
-            url: "http://127.0.0.1:3000/api/v1/users/updateMe",
-            data: {
-                name,
-                email
-            }
-        });
-        if (res.data.status === "success") {
-            (0, _alerts.showAlert)("success", "Update successfully");
-            window.setTimeout(()=>{
-                location.assign("/me");
-            }, 1500);
-        }
-    } catch (err) {
-        (0, _alerts.showAlert)("error", err.response.data.message);
-    }
-};
-
-},{"axios":"jo6P5","./alerts":"6Mcnf","@parcel/transformer-js/src/esmodule-helpers.js":"fD7H8"}]},["f2QDv"], "f2QDv", "parcelRequireed2e")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"fD7H8"}]},["f2QDv"], "f2QDv", "parcelRequireed2e")
 
 //# sourceMappingURL=index.js.map

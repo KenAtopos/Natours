@@ -13,4 +13,10 @@ router.get("/tour/:tourSlug", viewsController.getTour);
 router.get("/login", viewsController.getLoginForm);
 router.get("/signup", viewsController.getSignUpForm);
 
+router.post(
+  "/submit-user-data",
+  authController.protect,
+  viewsController.updateUserData
+);
+
 module.exports = router;

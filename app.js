@@ -24,12 +24,49 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(path.join(__dirname, "public")));
 
 // set security HTTP headers
+const scriptSrcUrls = [
+  "https://unpkg.com/",
+  "https://tile.openstreetmap.org",
+  "https://js.stripe.com",
+  "https://m.stripe.network",
+  "https://*.cloudflare.com",
+];
+const styleSrcUrls = [
+  "https://unpkg.com/",
+  "https://tile.openstreetmap.org",
+  "https://fonts.googleapis.com/",
+];
+const connectSrcUrls = [
+  "https://unpkg.com",
+  "https://tile.openstreetmap.org",
+  "https://*.stripe.com",
+  "https://bundle.js:*",
+  "ws://127.0.0.1:*/",
+];
+const fontSrcUrls = ["fonts.googleapis.com", "fonts.gstatic.com"];
+
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "https://unpkg.com"],
-      "img-src": ["'self'", "data:", "https://*.tile.openstreetmap.org"],
+      defaultSrc: ["'self'", "data:", "blob:", "https:", "ws:"],
+      baseUri: ["'self'"],
+      fontSrc: ["'self'", ...fontSrcUrls],
+      scriptSrc: ["'self'", "https:", "http:", "blob:", ...scriptSrcUrls],
+      frameSrc: ["'self'", "https://js.stripe.com"],
+      objectSrc: ["'none'"],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", "blob:", "https://m.stripe.network"],
+      childSrc: ["'self'", "blob:"],
+      imgSrc: ["'self'", "blob:", "data:", "https:"],
+      formAction: ["'self'"],
+      connectSrc: [
+        "'self'",
+        "'unsafe-inline'",
+        "data:",
+        "blob:",
+        ...connectSrcUrls,
+      ],
+      upgradeInsecureRequests: [],
     },
   })
 );

@@ -35,10 +35,9 @@ if (logoutBtn) {
 if (userDataForm) {
   userDataForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const userName = document.getElementById("name").value;
-    const userEmail = document.getElementById("email").value;
-
-    updateSettings({ userName, userEmail }, "data");
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    updateSettings({ name, email }, "data");
   });
 }
 
